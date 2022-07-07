@@ -128,6 +128,130 @@ func TestInputsNotInField(t *testing.T) {
 	require.Error(t, err, "inputs values not inside Finite Field")
 }
 
+
+func TestCreateEntropy(t *testing.T) {
+	authorAddr := new(big.Int)
+	authorAddr.SetString("0xc3e973187a017e4f0af8fad10fe1aa1af6c3bac2", 16)
+	// fmt.Printf(notMyAddr.String());
+	// fmt.Println("");
+
+	readerAddr := new(big.Int)
+	readerAddr.SetString("0x34bd121818f4e6c165e8065690e39986383c6ced", 16);
+	
+	
+	beaconEntropy, _ := Hash([]*big.Int{authorAddr, readerAddr});
+	fmt.Println("merkle root: ", beaconEntropy);
+	fmt.Printf("%x\n", beaconEntropy);
+}
+
+//binary tree of depth 30, w. all 1s except two leaf nodes containing
+//ea8651d200faa0182d723fb984db7fe5ba04860a and 926b47c42ce6bc92242c080cf8fafed34a164017
+func TestCreateBinaryTreeTest(t *testing.T) {
+	const depth = 30;
+
+	notMyAddr := new(big.Int)
+	//writer
+	notMyAddr.SetString("c3e973187a017e4f0af8fad10fe1aa1af6c3bac2", 16)
+	fmt.Printf(notMyAddr.String());
+	fmt.Println("");
+
+	//reader - proving membership
+	myAddr := new(big.Int)
+	myAddr.SetString("34bd121818F4e6c165E8065690e39986383C6ceD", 16);
+	fmt.Printf(myAddr.String());
+	fmt.Println("");
+
+	current, _ := Hash([]*big.Int{myAddr, notMyAddr});
+
+	for i := 0; i < depth - 1; i++ {
+		current, _ = Hash([]*big.Int{current, new(big.Int).SetInt64(1)});
+	}
+
+	fmt.Println("merkle root: ", current);
+
+	r := new(big.Int)
+	r.SetString("c4a116bd347622601451a08293194aedca8db4ce2ee952149d539c13c5369bd1", 16)
+	fmt.Printf(r.String());
+	fmt.Println("r");
+
+	//s
+	s := new(big.Int)
+	s.SetString("12566cf6c4c4c75d843ad453722afb893ca31c7934d08c9502dd4b3627c8c3d5", 16);
+	fmt.Printf(s.String());
+	fmt.Println("s");
+
+	msgHash := new(big.Int)
+	msgHash.SetString("32ff44835b5efcadfd8e1e5239a69601fb34d4a9447801fb195dd31ad0b9d95a", 16);
+	fmt.Printf(msgHash.String());
+	fmt.Println("msgHash");
+	
+	//pubkey
+	pubkey := new(big.Int);
+	pubkey.SetString("d52bbaa2206654202f218d279af97d8de56d4a56935429da89638da7fe5c68f654b8dcad21565a2e1238351405bdae019629a94cfb32375f088552a4bef23fc5", 16);
+	fmt.Printf(pubkey.String());
+	fmt.Println("pubkey");
+
+}
+
+func TestSanityCheck(t *testing.T) {
+
+	leaf := new(big.Int)
+	leaf.SetString("1", 10);
+
+	leafPlusOne := new(big.Int)
+	leafPlusOne.SetString("217234377348884654691879377518794323857294947151490278790710809376325639809", 10);
+
+	testRes, _ := Hash([]*big.Int{leaf, leafPlusOne});
+	fmt.Println(testRes);
+}
+
+func TestHash1(t *testing.T) {
+
+	myAddr := new(big.Int)
+	myAddr.SetString("926B47C42Ce6BC92242c080CF8fAFEd34a164017", 16);
+
+	one := new(big.Int)
+	one.SetString("1", 16);
+
+	simple,_ := Hash([]*big.Int{myAddr, one});
+	fmt.Println(simple.String());
+	fmt.Printf("%x\n", simple);
+	fmt.Println("----------")
+	
+	same,_ := Hash([]*big.Int{one});
+	fmt.Println(same.String());
+	fmt.Printf("%x\n", same);
+}
+
+func TestHashHex(t * testing.T) {
+
+	notMyAddr := new(big.Int)
+	notMyAddr.SetString("ea8651d200faa0182d723fb984db7fe5ba04860a", 16)
+	// fmt.Printf(notMyAddr.String());
+	// fmt.Println("");
+
+	myAddr := new(big.Int)
+	myAddr.SetString("926b47c42ce6bc92242c080cf8fafed34a164017", 16);
+	// fmt.Printf(myAddr.String());
+	// fmt.Println("");
+
+	//r
+
+	testing := new(big.Int);
+	testing.SetString("1836763629971327635731600374437240677991705583129234040872511407900522529698842601328587433661906051586664453499473781104203504117751847416013362528823638363", 10);
+	fmt.Printf("%x", testing)
+	fmt.Println("")
+	//signature
+	// signature := new(big.Int)
+	// signature.SetString("", 16);
+	// fmt.Printf(signature.String());
+	// fmt.Println("root");
+
+	// hello, _ := Hash([]*big.Int{myAddr, notMyAddr});
+	// fmt.Println(hello.String());
+	// fmt.Printf("%x", hello);
+}
+
 func TestHashBytes(t *testing.T) {
 	type testVector struct {
 		bytes        string
